@@ -1,16 +1,13 @@
-FROM python:3.11-slim
-
+FROM eclipse-temurin:17-jdk-alpine AS build
 WORKDIR /app
+COPY gradle ./gradle
+COPY gradlew build.gradle settings.gradle ./
+RUN chmod +x gradlew
+COPY src ./src
+RUN ./gradlew build -x test --no-daemon
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y gcc libpq-dev curl && rm -rf /var/lib/apt/lists/*
-
-# Install python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application code
-COPY . .
-
-# Run uvicorn server
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=build /app/build/libs/*SNAPSHOT.jar app.jar
+EXPOSE 8000
+ENTRYPOINT ["java", "-jar", "app.jar"]

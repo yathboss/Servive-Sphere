@@ -1,43 +1,51 @@
-# ServiceSphere
+# ServiceSphere (Production Grade)
 
-A platform that connects users with nearby skilled workers (plumber/electrician/carpenter/helper). 
-Users search by service type and location, compare workers by price/rating/distance, request a job, and the system automatically selects the best worker and schedules jobs efficiently.
+A professional web application that connects users with nearby skilled workers (plumber, electrician, carpenter, etc.).
 
-## Prerequisites
-- Docker & Docker Compose
-- Node.js (for local frontend dev)
-- Python 3.10+ (for local backend dev)
+This final version features a robust **Java Spring Boot** backend, an upgraded **Next.js** frontend with premium UX, and highly optimized, graph-based job allocation algorithms. 
 
-## Running the Application (End-to-End Demo)
+## Final Tech Stack
+- **Frontend**: JavaScript (React + Next.js), Tailwind CSS, shadcn/ui.
+- **Backend**: Java 17, Spring Boot, Spring Data JPA, Gradle.
+- **Database**: PostgreSQL (containerized).
+- **Algorithms**: Implementations for Haversine distances, Dijkstra route pathfinding on adjacency lists, Ranking logic (Min-Max normalization), and Greedy EDF Scheduling with fairness constraints.
 
-The easiest way to run the entire stack (Database, Backend API, Frontend Next.js) is via Docker Compose.
+## Architecture & Features
+- **Product-grade UX**: Search and compare workers, view detailed algorithmic breakdowns (Why was this worker chosen?), manage job lifecycles.
+- **Worker Dashboard**: Workers can view their queues, manage availability, and accept/decline/complete jobs.
+- **Admin Analytics**: View fairness metrics, algorithm runtime, and Dijkstra stats.
+- **Clean Architecture**: Strong isolation of concerns across `controller`, `service`, `repository`, `model`, `dto`, and `algorithms` packages.
 
-1. **Start the services:**
+## Quick Start (Docker Compose)
+The entire application runs seamlessly via Docker Compose, eliminating the need for local Java or Postgres installations.
+
+1. **Start the Stack**
    ```bash
    docker compose up --build
    ```
-   This will start:
-   - PostgreSQL on port 5432
-   - FastAPI Backend on port 8000
-   - Next.js Frontend on port 3000
+   This builds the Spring Boot artifact via a multi-stage Dockerfile and hosts:
+   - Backend on `http://localhost:8000`
+   - Frontend on `http://localhost:3000`
+   - Postgres DB on port `5432`
 
-2. **Seed the Database:**
-   Once the backend is up, you must seed the database with the initial road graph, users, and workers. Run the following command (or hit the endpoint from the Swagger UI at `http://localhost:8000/docs`):
+2. **Seed the Database**
+   To populate the system with exactly 100 workers and 200 jobs, run:
    ```bash
-   curl -X POST http://localhost:8000/seed
+   curl -X POST http://localhost:8000/api/seed
+   ```
+   Or use the **Seed Database** button inside the Admin Dashboard.
+
+3. **Explore the Demo Flow**
+   - **User App**: [http://localhost:3000](http://localhost:3000) (Search -> Request Job)
+   - **Worker Dashboard**: [http://localhost:3000/worker/1](http://localhost:3000/worker/1) (Accept -> Complete Jobs)
+   - **Admin Analytics**: [http://localhost:3000/admin](http://localhost:3000/admin) (Trigger Allocation -> View Metrics)
+
+4. **Trigger Allocation**
+   You can manually trigger the Greedy EDF Scheduling algorithm via the Admin UI, or manually hit:
+   ```bash
+   curl -X POST http://localhost:8000/api/jobs/allocate
    ```
 
-3. **Access the Demo:**
-   - **Frontend UI:** [http://localhost:3000](http://localhost:3000)
-   - **Backend API Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
-
-4. **Testing Allocation:**
-   You can place a job request from the frontend or backend, then trigger the allocation cron-like endpoint to assign the jobs based on priority and deadlines.
-   ```bash
-   curl -X POST http://localhost:8000/allocate
-   ```
-
-## Development
-
-The backend uses FastAPI and SQLAlchemy. The core algorithms are found in `backend/algorithms/`.
-The frontend is a Next.js 14 application using the App Router and Tailwind CSS.
+## Design Notes
+- No academic or team metadata is exposed anywhere in the codebase.
+- The greedy EDF algorithm explicitly considers a "worker load count" to ensure fair distribution of jobs rather than overloading the highest-rated worker.

@@ -1,0 +1,9 @@
+frontend_git_backup/
+build_log.txt
+docker_log.txt
+out.json
+out2.txt
+
+backend/build.log
+backend/spring.log
+backend/servicesphere.db
