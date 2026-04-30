@@ -10,7 +10,7 @@ public class DijkstraAlgorithm {
         double minDist = Double.MAX_VALUE;
         String nearestId = null;
 
-        for (GraphNode node : graph.getAllNodes()) {
+        for(GraphNode node : graph.getAllNodes()) {
             double dist = Math.hypot(lat - node.getLat(), lon - node.getLon());
             if (dist < minDist) {
                 minDist = dist;
