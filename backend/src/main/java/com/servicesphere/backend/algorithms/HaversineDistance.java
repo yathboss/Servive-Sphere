@@ -9,8 +9,7 @@ public class HaversineDistance {
 
         lat1 = Math.toRadians(lat1);
         lat2 = Math.toRadians(lat2);
-
-        double a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dLon / 2), 2);
+  double a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dLon / 2), 2);
         double c = 2 * Math.asin(Math.sqrt(a));
         
         return EARTH_RADIUS_KM * c;
